@@ -4,15 +4,16 @@ const ctx = canvas.getContext("2d");
 const jugador = {
     x: canvas.width / 2,
     y: canvas.height - 100,
-    velocidad: 10,
+    velocidad: 5,
     vidas: 3
 };
 
 const meteoritos = [];
 const corazones = [];
 const disparos = []; 
-let showVelocity = false;
-let debugMode = true
+let showVelocity = true;
+let showVelocityMeteorito = true;
+let debugMode = false;
 
 const cuadroLetras = {
     x: canvas.width - 150,
@@ -70,7 +71,7 @@ function dibujarMeteoritos() {
 
         if (meteorito.y > canvas.height + meteorito.radio) {
             meteorito.y = -meteorito.radio;
-            meteorito.x = Math.random() * canvas.width;
+            meteorito.x = Math.random() * canvas.width
         }
     }
 }
@@ -145,7 +146,7 @@ function dibujarDisparos() {
                 meteorito.y = -meteorito.radio;
                 meteorito.x = Math.random() * canvas.width;
                 
-                jugador.puntos += 10;
+                jugador.puntos += 1;
             }
         }
 
@@ -174,12 +175,12 @@ function dibujarCuadros() {
 }
 
 document.addEventListener("keydown", (event) => {
-    if (event.key === "a" || event.key === "A") {
+    if (event.key === "a" || event.key === "A" || event.key === "ArrowLeft") {
         jugador.x -= jugador.velocidad;
         if (debugMode)   showVelocity = !showVelocity
-    } else if (event.key === "d" || event.key === "D") {
+    } else if (event.key === "d" || event.key === "D" || event.key === "ArrowRight") {
         jugador.x += jugador.velocidad;
-    } else if (event.key === " " || event.key === "w") { // Disparar al presionar la tecla "W"
+    } else if (event.key === " " || event.key === "w" ||event.key === "D" || event.key === "ArrowUp") { // Disparar al presionar la tecla "W"
         const disparo = {
             x: jugador.x,
             y: jugador.y,
@@ -326,28 +327,8 @@ function animarCorazon() {
 
 animarCorazon();
 
-function draw() {
-    const canvas = document.getElementById("canvas");
-    if (canvas.getContext) {
-      const ctx = canvas.getContext("2d");
-  
-      // Ejemplo de curvas cúbicas
-      ctx.beginPath();
-      ctx.moveTo(75, 40);
-      ctx.bezierCurveTo(75, 37, 70, 25, 50, 25);
-      ctx.bezierCurveTo(20, 25, 20, 62.5, 20, 62.5);
-      ctx.bezierCurveTo(20, 80, 40, 102, 75, 120);
-      ctx.bezierCurveTo(110, 102, 130, 80, 130, 62.5);
-      ctx.bezierCurveTo(130, 62.5, 130, 25, 100, 25);
-      ctx.bezierCurveTo(85, 25, 75, 37, 75, 40);
-      ctx.fill();
-    }
-  }
-
-    
-        
-
 iniciarJuego();
+
 
 
 
