@@ -173,24 +173,35 @@ function dibujarCuadros() {
     ctx.fillText("Score: " + jugador.puntos, cuadroScore.x + 10, cuadroScore.y + 30);
     ctx.fillText("Vidas: " + jugador.vidas, cuadroVidas.x + 10, cuadroVidas.y + 30);
 }
-
 document.addEventListener("keydown", (event) => {
-    if (event.key === "a" || event.key === "A" || event.key === "ArrowLeft") {
-        jugador.x -= jugador.velocidad;
-        if (debugMode)   showVelocity = !showVelocity
-    } else if (event.key === "d" || event.key === "D" || event.key === "ArrowRight") {
-        jugador.x += jugador.velocidad;
-    } else if (event.key === " " || event.key === "w" ||event.key === "D" || event.key === "ArrowUp") { // Disparar al presionar la tecla "W"
-        const disparo = {
-            x: jugador.x,
-            y: jugador.y,
-            radio: 5,
-            velocidad: 5,
-            color: "#FFA500"
-        };
-        disparos.push(disparo);
+    switch (event.key.toLowerCase()) {
+        case "a":
+        case "arrowleft":
+            jugador.x -= jugador.velocidad;
+            if (debugMode) showVelocity = !showVelocity;
+            break;
+        case "d":
+        case "arrowright":
+            jugador.x += jugador.velocidad;
+            break;
+        case " ":
+        case "w":
+        case "arrowup":
+            const disparo = {
+                x: jugador.x,
+                y: jugador.y,
+                radio: 5,
+                velocidad: 5,
+                color: "#FFA500"
+            };
+            disparos.push(disparo);
+            break;
+        default:
+            // No hacer nada en caso de otras teclas
+            break;
     }
 });
+  
 
 function dibujarEscena() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
