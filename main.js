@@ -12,7 +12,7 @@ const meteoritos = [];
 const corazones = [];
 const disparos = []; 
 let showVelocity = false;
-let debugMode = false
+let debugMode = true
 
 const cuadroLetras = {
     x: canvas.width - 150,
