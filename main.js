@@ -5,7 +5,9 @@ const jugador = {
     x: canvas.width / 2,
     y: canvas.height - 100,
     velocidad: 5,
-    vidas: 3
+    nombre: "Luiz",
+    vidas: 3,
+    timer: "10:00"
 };
 
 const meteoritos = [];
@@ -16,25 +18,41 @@ let showVelocityMeteorito = true;
 let debugMode = false;
 
 const cuadroLetras = {
-    x: canvas.width - 150,
-    y: 0,
-    ancho: 100,
+    x: 1150,
+    y: 100,
+    ancho: 50,
     alto: 50
 };
 
 const cuadroScore = {
-    x: canvas.width / 2-250,
+    x: 260,
     y: 0,
     ancho: 120,
     alto: 45
 };
 
 const cuadroVidas = {
-    x: 0,
+    x: 390,
     y: 0,
     ancho: 85,
     alto: 45
 };
+
+const cuadroNombre = {
+    x: 0,
+    y: 0,
+    ancho: 250,
+    alto: 45
+};
+
+const cuadroTimer = {
+    x: 500,
+    y: 0,
+    ancho: 150,
+    alto: 45
+};
+
+
 
 function dibujarJugador() {
     ctx.beginPath();
@@ -42,7 +60,7 @@ function dibujarJugador() {
     ctx.lineTo(jugador.x - 40, jugador.y + 80);
     ctx.lineTo(jugador.x + 40, jugador.y + 80);
     ctx.closePath();
-    ctx.fillStyle = "#00FF00";
+    ctx.fillStyle = "#FFFFFF";
     ctx.fill();
 }
 
@@ -50,11 +68,13 @@ const jugadorImagen = new Image();
 jugadorImagen.src = 'img/cupi.png'; // Cambia el nombre de archivo por el de tu imagen
 
 
+
+
 function dibujarJugador() {
     ctx.drawImage(jugadorImagen, jugador.x - 40, jugador.y - 40, 120, 80); // Ajusta el tamaño y posición de la imagen
     if (showVelocity) {
         ctx.font = "60px Arial";
-        ctx.fillStyle = "#00FF00";
+        ctx.fillStyle = "FFFFFF";
         ctx.fillText(jugador.velocidad, jugador.x + 40, jugador.y + 30);    
     }
 }
@@ -161,17 +181,27 @@ function dibujarCuadros() {
     ctx.fillStyle = "#FF0000";
     ctx.fillRect(cuadroLetras.x, cuadroLetras.y, cuadroLetras.ancho, cuadroLetras.alto);
 
-    ctx.fillStyle = "#00FF00";
+    ctx.fillStyle = "#000000";
     ctx.fillRect(cuadroScore.x, cuadroScore.y, cuadroScore.ancho, cuadroScore.alto);
 
-    ctx.fillStyle = "#0000FF";
+    ctx.fillStyle = "#000000";
     ctx.fillRect(cuadroVidas.x, cuadroVidas.y, cuadroVidas.ancho, cuadroVidas.alto);
 
-    ctx.font = "20px Arial";
     ctx.fillStyle = "#000000";
-    ctx.fillText("A", cuadroLetras.x + 40, cuadroLetras.y + 30);
+    ctx.fillRect(cuadroNombre.x, cuadroNombre.y, cuadroNombre.ancho, cuadroNombre.alto);
+    
+    ctx.fillStyle = "#000000";
+    ctx.fillRect(cuadroTimer.x, cuadroTimer.y, cuadroTimer.ancho, cuadroTimer.alto);
+
+
+    ctx.font = "20px Arial";
+    ctx.fillStyle = "#FFFFFF";
     ctx.fillText("Score: " + jugador.puntos, cuadroScore.x + 10, cuadroScore.y + 30);
     ctx.fillText("Vidas: " + jugador.vidas, cuadroVidas.x + 10, cuadroVidas.y + 30);
+    ctx.fillText("Nombre: " + jugador.nombre, cuadroNombre.x + 10, cuadroNombre.y + 30);
+    ctx.fillText("Tiempo: " + jugador.timer, cuadroTimer.x + 10, cuadroTimer.y + 30);
+    ctx.fillStyle = "#000000";
+    ctx.fillText("A", cuadroLetras.x + 18, cuadroLetras.y + 30);
 }
 document.addEventListener("keydown", (event) => {
     switch (event.key.toLowerCase()) {
@@ -308,7 +338,7 @@ function dibujarCorazon() {
     );
     ctx.closePath();
 
-    ctx.fillStyle = "green";
+    ctx.fillStyle = "black";
     ctx.fill();
 }
 
