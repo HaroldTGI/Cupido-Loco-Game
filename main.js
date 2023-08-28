@@ -381,6 +381,51 @@ animarCorazon();
 
 iniciarJuego();
 
+function iniciarJuego() {
+    pedirNombreJugador(); // Llamamos a la función para pedir el nombre al inicio del juego
+
+    for (let i = 0; i < 5; i++) {
+        const meteorito = {
+            x: Math.random() * canvas.width,
+            y: Math.random() * -canvas.height,
+            radio: Math.random() * 20 + 10,
+            velocidadY: Math.random() * 1 + 1,
+            color: getRandomColor(),
+        };
+        meteoritos.push(meteorito);
+    }
+
+    jugador.puntos = 0;
+
+    dibujarEscena();
+
+    const corazon = {
+        x: Math.random() * canvas.width,
+        y: Math.random() * -canvas.height,
+        radio: 1,
+        velocidadY: Math.random() * 0.0 + 0.1,
+        color: "red",
+        visible: true,
+        parpadeoVisible: true
+    };
+    corazones.push(corazon);
+
+    
+    // El contador de tiempo
+    let tiempoRestante = 600; 
+
+    const timerInterval = setInterval(() => {
+        tiempoRestante--;
+        const minutos = Math.floor(tiempoRestante / 60);
+        const segundos = tiempoRestante % 60;
+        jugador.timer = `${minutos}:${segundos < 10 ? '0' : ''}${segundos}`;
+
+        if (tiempoRestante <= 0) {
+            clearInterval(timerInterval); 
+            alert("¡Tiempo agotado!");
+        }
+    }, 1000); 
+}
 
 
 
