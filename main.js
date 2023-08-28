@@ -5,7 +5,7 @@ const jugador = {
     x: canvas.width / 2,
     y: canvas.height - 100,
     velocidad: 5,
-    nombre: "Luiz",
+    nombre: "",
     vidas: 3,
     timer: "10:00"
 };
@@ -15,7 +15,7 @@ const corazones = [];
 const disparos = []; 
 let showVelocity = true;
 let showVelocityMeteorito = true;
-let debugMode = false;
+let debugMode = true;
 
 const cuadroLetras = {
     x: 1150,
@@ -52,6 +52,13 @@ const cuadroTimer = {
     alto: 45
 };
 
+function pedirNombreJugador() {
+    const nombre = prompt("Por favor, ingresa tu nombre:");
+    if (nombre) {
+        jugador.nombre = nombre;
+    }
+}
+
 
 
 function dibujarJugador() {
@@ -72,12 +79,14 @@ jugadorImagen.src = 'img/cupi.png'; // Cambia el nombre de archivo por el de tu 
 
 function dibujarJugador() {
     ctx.drawImage(jugadorImagen, jugador.x - 40, jugador.y - 40, 120, 80); // Ajusta el tamaño y posición de la imagen
+
     if (showVelocity) {
         ctx.font = "60px Arial";
-        ctx.fillStyle = "FFFFFF";
-        ctx.fillText(jugador.velocidad, jugador.x + 40, jugador.y + 30);    
+        ctx.fillStyle = "#FFFFFF";
+        ctx.fillText(jugador.velocidad, jugador.x + 40, jugador.y + 30);
     }
 }
+
 
 function dibujarMeteoritos() {
     for (const meteorito of meteoritos) {
@@ -207,12 +216,11 @@ document.addEventListener("keydown", (event) => {
     switch (event.key.toLowerCase()) {
         case "a":
         case "arrowleft":
-            jugador.x -= jugador.velocidad;
-            if (debugMode) showVelocity = !showVelocity;
+            jugador.x -= jugador.velocidad; // Mover a la izquierda
             break;
         case "d":
         case "arrowright":
-            jugador.x += jugador.velocidad;
+            jugador.x += jugador.velocidad; // Mover a la derecha
             break;
         case " ":
         case "w":
@@ -222,16 +230,17 @@ document.addEventListener("keydown", (event) => {
                 y: jugador.y,
                 radio: 5,
                 velocidad: 5,
-                color: "#FFA500"
+                color: "red"
             };
             disparos.push(disparo);
             break;
+        case "p":
+            if (debugMode) showVelocity = !showVelocity;
+            break;
         default:
-            // No hacer nada en caso de otras teclas
             break;
     }
 });
-  
 
 function dibujarEscena() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -248,13 +257,15 @@ function dibujarEscena() {
 }
 
 function iniciarJuego() {
+    pedirNombreJugador(); // Llamamos a la función para pedir el nombre al inicio del juego
+
     for (let i = 0; i < 5; i++) {
         const meteorito = {
             x: Math.random() * canvas.width,
             y: Math.random() * -canvas.height,
             radio: Math.random() * 20 + 10,
             velocidadY: Math.random() * 1 + 1,
-            color: getRandomColor(), // Agrega un color aleatorio
+            color: getRandomColor(),
         };
         meteoritos.push(meteorito);
     }
@@ -263,17 +274,17 @@ function iniciarJuego() {
 
     dibujarEscena();
 
-        const corazon = {
-            x: Math.random() * canvas.width,
-            y: Math.random() * -canvas.height,
-            radio: 1,
-            velocidadY: Math.random() * 0.0 + 0.1,
-            color: "red",
-            visible: true,
-            parpadeoVisible: true
-        };
-        corazones.push(corazon);
-    }
+    const corazon = {
+        x: Math.random() * canvas.width,
+        y: Math.random() * -canvas.height,
+        radio: 1,
+        velocidadY: Math.random() * 0.0 + 0.1,
+        color: "red",
+        visible: true,
+        parpadeoVisible: true
+    };
+    corazones.push(corazon);
+}
 
     jugador.puntos = 0; // Agregar propiedad para almacenar puntos del jugador
 
