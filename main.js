@@ -60,7 +60,6 @@ function pedirNombreJugador() {
 }
 
 
-
 function dibujarJugador() {
     ctx.beginPath();
     ctx.moveTo(jugador.x, jugador.y);
@@ -76,7 +75,6 @@ jugadorImagen.src = 'img/cupi.png'; // Cambia el nombre de archivo por el de tu 
 
 
 
-
 function dibujarJugador() {
     ctx.drawImage(jugadorImagen, jugador.x - 40, jugador.y - 40, 120, 80); // Ajusta el tamaño y posición de la imagen
 
@@ -87,6 +85,48 @@ function dibujarJugador() {
     }
 }
 
+
+const cuadrosDeLetras = [];
+
+for (let i = 0; i < 5; i++) {
+    const cuadro = {
+        x: Math.random() * (canvas.width - cuadroLetras.ancho),
+        y: Math.random() * -canvas.height,
+        ancho: cuadroLetras.ancho,
+        alto: cuadroLetras.alto,
+        color: getRandomColor(),
+        letra: obtenerLetraAleatoria(),
+        velocidadY: Math.random() * 1 + 1
+    };
+    cuadrosDeLetras.push(cuadro);
+}
+
+function dibujarCuadroDeLetras() {
+    for (const cuadro of cuadrosDeLetras) {
+        ctx.fillStyle = cuadro.color;
+        ctx.fillRect(cuadro.x, cuadro.y, cuadro.ancho, cuadro.alto);
+
+        ctx.font = "20px Arial";
+        ctx.fillStyle = "#FFFFFF";
+        ctx.fillText(cuadro.letra, cuadro.x + cuadro.ancho / 3, cuadro.y + cuadro.alto / 1.5);
+
+        cuadro.y += cuadro.velocidadY;
+
+        if (cuadro.y > canvas.height + cuadro.alto) {
+            cuadro.y = -cuadro.alto;
+            cuadro.x = Math.random() * (canvas.width - cuadro.ancho);
+            cuadro.letra = obtenerLetraAleatoria(); // Cambiar la letra aleatoriamente
+        }
+    }
+}
+
+
+// Función para obtener una letra aleatoria
+function obtenerLetraAleatoria() {
+    const letras = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"; // Puedes ajustar las letras según tus preferencias
+    const indice = Math.floor(Math.random() * letras.length);
+    return letras[indice];
+}
 
 function dibujarMeteoritos() {
     for (const meteorito of meteoritos) {
@@ -212,6 +252,7 @@ function dibujarCuadros() {
     ctx.fillStyle = "#000000";
     ctx.fillText("A", cuadroLetras.x + 18, cuadroLetras.y + 30);
 }
+
 document.addEventListener("keydown", (event) => {
     switch (event.key.toLowerCase()) {
         case "a":
@@ -252,6 +293,7 @@ function dibujarEscena() {
     dibujarMeteoritos();
     dibujarCorazones();
     dibujarDisparos();
+    dibujarCuadroDeLetras();
 
     requestAnimationFrame(dibujarEscena);
 }
