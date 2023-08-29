@@ -558,11 +558,3 @@ function iniciarJuego() {
         }
     }, 1000); 
 }
-
-
-
-
-
-
-
-
