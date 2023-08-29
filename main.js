@@ -1,15 +1,17 @@
 const canvas = document.getElementById("myCanvas");
 const ctx = canvas.getContext("2d");
 
+
 const jugador = {
     x: canvas.width / 2,
     y: canvas.height - 100,
-    velocidad: 5,
+    velocidad: 3,
     nombre: "",
     vidas: 3,
     timer: "10:00"
 };
 
+const particulas = [];
 const meteoritos = [];
 const corazones = [];
 const disparos = []; 
@@ -60,7 +62,6 @@ function pedirNombreJugador() {
 }
 
 
-
 function dibujarJugador() {
     ctx.beginPath();
     ctx.moveTo(jugador.x, jugador.y);
@@ -76,7 +77,6 @@ jugadorImagen.src = 'img/cupi.png'; // Cambia el nombre de archivo por el de tu 
 
 
 
-
 function dibujarJugador() {
     ctx.drawImage(jugadorImagen, jugador.x - 40, jugador.y - 40, 120, 80); // Ajusta el tamaño y posición de la imagen
 
@@ -87,9 +87,71 @@ function dibujarJugador() {
     }
 }
 
+const cuadrosDeLetras = [];
+
+for (let i = 0; i < 5; i++) {
+    const cuadro = {
+        x: Math.random() * (canvas.width - cuadroLetras.ancho),
+        y: Math.random() * -canvas.height,
+        ancho: cuadroLetras.ancho,
+        alto: cuadroLetras.alto,
+        color: getRandomColor(),
+        letra: obtenerLetraAleatoria(),
+        velocidadY: Math.random() * 1 + 1
+    };
+    cuadrosDeLetras.push(cuadro);
+}
+
+function dibujarCuadroDeLetras() {
+    for (const cuadro of cuadrosDeLetras) {
+        ctx.fillStyle = cuadro.color;
+        ctx.fillRect(cuadro.x, cuadro.y, cuadro.ancho, cuadro.alto);
+
+        ctx.font = "20px Arial";
+        ctx.fillStyle = "#FFFFFF";
+        ctx.fillText(cuadro.letra, cuadro.x + cuadro.ancho / 3, cuadro.y + cuadro.alto / 1.5);
+
+        cuadro.y += cuadro.velocidadY;
+
+        if (cuadro.y > canvas.height + cuadro.alto) {
+            cuadro.y = -cuadro.alto;
+            cuadro.x = Math.random() * (canvas.width - cuadro.ancho);
+            cuadro.letra = obtenerLetraAleatoria(); // Cambiar la letra aleatoriamente
+        }
+    }
+}
+
+// Función para obtener una letra aleatoria
+function obtenerLetraAleatoria() {
+    const letras = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"; // Puedes ajustar las letras según tus preferencias
+    const indice = Math.floor(Math.random() * letras.length);
+    return letras[indice];
+}
+
+
 
 function dibujarMeteoritos() {
     for (const meteorito of meteoritos) {
+        const distanciaX = Math.abs(jugador.x - meteorito.x);
+        const distanciaY = Math.abs(jugador.y - meteorito.y);
+
+        if (distanciaX < (jugadorImagen.width / 2 + meteorito.radio) && distanciaY < (jugadorImagen.height / 2 + meteorito.radio)) {
+            // Restar una vida al jugador
+            jugador.vidas--;
+
+            // Reiniciar la posición del jugador
+            jugador.x = canvas.width / 2;
+            jugador.y = canvas.height - 100;
+
+            // Comprobar si se agotaron las vidas
+            if (jugador.vidas <= 0) {
+                // Detener el juego
+                clearInterval(timerInterval);
+                alert("¡Has perdido! Tu puntuación final es: " + jugador.puntos);
+                location.reload(); // Recargar la página para reiniciar el juego
+            }
+        }
+
         ctx.beginPath();
         ctx.arc(meteorito.x, meteorito.y, meteorito.radio, 0, Math.PI * 2);
         ctx.fillStyle = meteorito.color;
@@ -100,10 +162,15 @@ function dibujarMeteoritos() {
 
         if (meteorito.y > canvas.height + meteorito.radio) {
             meteorito.y = -meteorito.radio;
-            meteorito.x = Math.random() * canvas.width
+            meteorito.x = Math.random() * canvas.width;
         }
     }
 }
+
+
+
+
+
 
 function dibujarCorazones() {
     for (const corazon of corazones) {
@@ -176,6 +243,17 @@ function dibujarDisparos() {
                 meteorito.x = Math.random() * canvas.width;
                 
                 jugador.puntos += 1;
+
+                // Crear una explosión de partículas en la posición de la colisión
+                for (let i = 0; i < 10; i++) {
+                    crearParticula(disparo.x, disparo.y);
+                }
+
+                // Eliminar el disparo
+                disparos.splice(disparos.indexOf(disparo), 1);
+
+                // Salir del bucle de comprobación de colisión
+                break;
             }
         }
 
@@ -186,9 +264,47 @@ function dibujarDisparos() {
     }
 }
 
+
+// Función para crear una nueva partícula en la explosión
+function crearParticula(x, y) {
+    const particula = {
+        x: x,
+        y: y,
+        velocidadX: Math.random() * 2 - 1,
+        velocidadY: Math.random() * 2 - 1,
+        vida: 30, // Tiempo de vida de la partícula
+        color: getRandomColor(),
+        radio: Math.random() * 3 + 1 // Tamaño aleatorio
+    };
+    particulas.push(particula);
+}
+
+// Función para actualizar las partículas en cada ciclo de actualización
+function actualizarParticulas() {
+    for (let i = particulas.length - 1; i >= 0; i--) {
+        const particula = particulas[i];
+        particula.x += particula.velocidadX;
+        particula.y += particula.velocidadY;
+        particula.vida--;
+        if (particula.vida <= 0) {
+            particulas.splice(i, 1); // Eliminar partícula
+        }
+    }
+}
+
+// Función para dibujar las partículas en la pantalla
+function dibujarParticulas() {
+    for (const particula of particulas) {
+        ctx.beginPath();
+        ctx.arc(particula.x, particula.y, particula.radio, 0, Math.PI * 2);
+        ctx.fillStyle = particula.color;
+        ctx.fill();
+        ctx.closePath();
+    }
+}
+
+
 function dibujarCuadros() {
-    ctx.fillStyle = "#FF0000";
-    ctx.fillRect(cuadroLetras.x, cuadroLetras.y, cuadroLetras.ancho, cuadroLetras.alto);
 
     ctx.fillStyle = "#000000";
     ctx.fillRect(cuadroScore.x, cuadroScore.y, cuadroScore.ancho, cuadroScore.alto);
@@ -202,7 +318,6 @@ function dibujarCuadros() {
     ctx.fillStyle = "#000000";
     ctx.fillRect(cuadroTimer.x, cuadroTimer.y, cuadroTimer.ancho, cuadroTimer.alto);
 
-
     ctx.font = "20px Arial";
     ctx.fillStyle = "#FFFFFF";
     ctx.fillText("Score: " + jugador.puntos, cuadroScore.x + 10, cuadroScore.y + 30);
@@ -212,35 +327,44 @@ function dibujarCuadros() {
     ctx.fillStyle = "#000000";
     ctx.fillText("A", cuadroLetras.x + 18, cuadroLetras.y + 30);
 }
+
+// Aqui podemos presionar varias teclas y funcionar, ejemplo movimiento y disparos.
+const teclasPresionadas = {};
+
 document.addEventListener("keydown", (event) => {
-    switch (event.key.toLowerCase()) {
-        case "a":
-        case "arrowleft":
-            jugador.x -= jugador.velocidad; // Mover a la izquierda
-            break;
-        case "d":
-        case "arrowright":
-            jugador.x += jugador.velocidad; // Mover a la derecha
-            break;
-        case " ":
-        case "w":
-        case "arrowup":
-            const disparo = {
-                x: jugador.x,
-                y: jugador.y,
-                radio: 5,
-                velocidad: 5,
-                color: "red"
-            };
-            disparos.push(disparo);
-            break;
-        case "p":
-            if (debugMode) showVelocity = !showVelocity;
-            break;
-        default:
-            break;
+    teclasPresionadas[event.key.toLowerCase()] = true;
+
+    if (event.key.toLowerCase() === "p" && debugMode) {
+        showVelocity = !showVelocity;
     }
 });
+
+document.addEventListener("keyup", (event) => {
+    teclasPresionadas[event.key.toLowerCase()] = false;
+});
+
+function actualizarJugador() {
+    if (teclasPresionadas["a"] || teclasPresionadas["arrowleft"]) {
+        if (jugador.x - jugador.velocidad >= 0) {
+            jugador.x -= jugador.velocidad; // Mover a la izquierda
+        }
+    }
+    if (teclasPresionadas["d"] || teclasPresionadas["arrowright"]) {
+        if (jugador.x + jugador.velocidad <= canvas.width - 60) {
+            jugador.x += jugador.velocidad; // Mover a la derecha
+        }
+    }
+    if (teclasPresionadas[" "] || teclasPresionadas["w"] || teclasPresionadas["arrowup"]) {
+        const disparo = {
+            x: jugador.x,
+            y: jugador.y,
+            radio: 5,
+            velocidad: 2,
+            color: "red"
+        };
+        disparos.push(disparo);
+    }
+}
 
 function dibujarEscena() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -252,11 +376,18 @@ function dibujarEscena() {
     dibujarMeteoritos();
     dibujarCorazones();
     dibujarDisparos();
+    dibujarCuadroDeLetras();
+    actualizarJugador();
+
+    actualizarParticulas();
+    dibujarParticulas();
 
     requestAnimationFrame(dibujarEscena);
 }
 
 function iniciarJuego() {
+    
+    jugador.vidas = 3; // Cambia el número de vidas según prefieras
     pedirNombreJugador(); // Llamamos a la función para pedir el nombre al inicio del juego
 
     for (let i = 0; i < 5; i++) {
@@ -271,6 +402,7 @@ function iniciarJuego() {
     }
 
     jugador.puntos = 0;
+   
 
     dibujarEscena();
 
@@ -426,6 +558,11 @@ function iniciarJuego() {
         }
     }, 1000); 
 }
+
+
+
+
+
 
 
 
