@@ -1,7 +1,6 @@
 const canvas = document.getElementById("myCanvas");
 const ctx = canvas.getContext("2d");
 
-
 const jugador = {
     x: canvas.width / 2,
     y: canvas.height - 100,
@@ -15,9 +14,9 @@ const particulas = [];
 const meteoritos = [];
 const corazones = [];
 const disparos = []; 
-let showVelocity = true;
-let showVelocityMeteorito = true;
-let debugMode = true;
+let showVelocity = false;
+let showVelocityMeteorito = false;
+let debugMode = false;
 
 const cuadroLetras = {
     x: 1150,
@@ -76,7 +75,6 @@ const jugadorImagen = new Image();
 jugadorImagen.src = 'img/cupi.png'; // Cambia el nombre de archivo por el de tu imagen
 
 
-
 function dibujarJugador() {
     ctx.drawImage(jugadorImagen, jugador.x - 40, jugador.y - 40, 120, 80); // Ajusta el tamaño y posición de la imagen
 
@@ -124,12 +122,11 @@ function dibujarCuadroDeLetras() {
 // Función para obtener una letra aleatoria
 function obtenerLetraAleatoria() {
     const letras = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"; // Puedes ajustar las letras según tus preferencias
-    const indice = Math.floor(Math.random() * letras.length);
+    const indice = Math.floor(Math.random() * letras.length); 
     return letras[indice];
 }
 
-
-
+ /*
 function dibujarMeteoritos() {
     for (const meteorito of meteoritos) {
         const distanciaX = Math.abs(jugador.x - meteorito.x);
@@ -166,11 +163,44 @@ function dibujarMeteoritos() {
         }
     }
 }
+  */
+function dibujarMeteoritos() {
+    for (const meteorito of meteoritos) {
+        const distanciaX = jugador.x + 40 - meteorito.x;
+        const distanciaY = jugador.y + 80 - meteorito.y;
+        const distancia = Math.sqrt(distanciaX * distanciaX + distanciaY * distanciaY);
 
+        if (distancia < jugadorImagen.width / 2 + meteorito.radio) {
+            // Restar una vida al jugador
+            jugador.vidas--;
 
+            // Reiniciar la posición del jugador
+            jugador.x = canvas.width / 2;
+            jugador.y = canvas.height - 100;
 
+            // Comprobar si se agotaron las vidas
+            if (jugador.vidas <= 0) {
+                // Detener el juego
+                clearInterval(timerInterval);
+                alert("¡Has perdido! Tu puntuación final es: " + jugador.puntos);
+                location.reload(); // Recargar la página para reiniciar el juego
+            }
+        }
 
+        ctx.beginPath();
+        ctx.arc(meteorito.x, meteorito.y, meteorito.radio, 0, Math.PI * 2);
+        ctx.fillStyle = meteorito.color;
+        ctx.fill();
+        ctx.closePath();
 
+        meteorito.y += meteorito.velocidadY;
+
+        if (meteorito.y > canvas.height + meteorito.radio) {
+            meteorito.y = -meteorito.radio;
+            meteorito.x = Math.random() * canvas.width;
+        }
+    }
+}
 
 function dibujarCorazones() {
     for (const corazon of corazones) {
@@ -385,8 +415,11 @@ function dibujarEscena() {
     requestAnimationFrame(dibujarEscena);
 }
 
+
+ // Imiciar juego 1 Repetidosssssssssssssssssssssssssssssssssssss
+
 function iniciarJuego() {
-    
+    // Aqui es para inciar el juego con la vida en 3.
     jugador.vidas = 3; // Cambia el número de vidas según prefieras
     pedirNombreJugador(); // Llamamos a la función para pedir el nombre al inicio del juego
 
@@ -430,6 +463,8 @@ function iniciarJuego() {
         }
         return color;
     }
+    
+    /*
     function dibujarMeteoritos() {
         for (const meteorito of meteoritos) {
             ctx.beginPath();
@@ -447,6 +482,9 @@ function iniciarJuego() {
         }
     }
 
+    */
+
+    
 const cuadroCorazon = {
     x: Math.random() * (canvas.width - 100), // Posición X aleatoria
     y: -90, // Comienza arriba del lienzo
@@ -512,6 +550,9 @@ function animarCorazon() {
 animarCorazon();
 
 iniciarJuego();
+
+
+// Iniciar juego repetidosssss 22222222222
 
 function iniciarJuego() {
     pedirNombreJugador(); // Llamamos a la función para pedir el nombre al inicio del juego
